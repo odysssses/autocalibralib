@@ -31,7 +31,7 @@ void LineSensor::calibrate() {
 bool LineSensor::isBlack() {
   int value = analogRead(_pin);
   // Considera uma margem de 70 unidades acima do limiar
-  return (value <= _threshold + 70);
+  return (value >= _threshold - 70);
 }
 
 int LineSensor::read() {
