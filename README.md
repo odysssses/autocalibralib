@@ -1,7 +1,7 @@
 # Instalação
 * Primeiramente, baixe o arquivo .zip daqui do github
-* Então, no arduino IDE, vá em **Sketch > Incluir biblioteca > Adicionar biblioteca .ZIP**
-* Isso abrirá uma tela para selecionar um arquivo, vá até a pasta em que baixou essa biblioteca e clique duas vezes.
+* Depois, extraia  o arquivo e remova o "-master"
+* Em seguida, coloque a pasta extraída no diretório "libraries"
 * Enfim, no topo do seu código, copie essa linha `#include <autocalibralib.h>`
 
 (Alternativamente, você pode extrair o .zip e colocar a pasta "autocalibralib" dentro do diretório libraries do arduino) 
