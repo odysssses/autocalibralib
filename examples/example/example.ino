@@ -1,45 +1,77 @@
 #include <autocalibralib.h>
-#include <EEPROM.h>
+#include <EEPROM2byte.h>
 
-LineSensor sensorL(A3, 3);  // Sensor esquerdo com LED no pino 3
-LineSensor sensorR(A1, 4); // Sensor direito com LED no pino 4
+EEPROM2byte eeprom;
+
+//Como o EEPROM, para armazenar valores maiores que 255, precisa de 2 bytes, os endereços tem de serem espaçados em ao menos 1
+#define address1 1
+#define address2 3
+#define address3 5
+#define address4 7
+
+LineSensor sensE(A0, -1);
+LineSensor sensD(A1, -1);
+LineSensor sensE_ext(A2, -1);
+LineSensor sensD_ext(A3, -1);
 
 void setup() {
   Serial.begin(9600);
   
   Serial.println("Calibrando sensores...");
+  
   Serial.println("Coloque o sensor ESQUERDO sobre a linha preta");
-  delay(3000);
-  sensorL.calibrate();
+  delay(8000);
+  sensE.setThreshold(sensE.read());
   
   Serial.println("Coloque o sensor DIREITO sobre a linha preta");
-  delay(3000);
-  sensorR.calibrate();
+  delay(6000);
+  sensD.setThreshold(sensD.read());
+
+  Serial.println("Coloque o sensor ESQUERDO EXTERIOR sobre a linha preta");
+  delay(6000);
+  sensE_ext.setThreshold(sensE_ext.read());
+  
+  Serial.println("Coloque o sensor DIREITO EXTERIOR sobre a linha preta");
+  delay(6000);
+  sensD_ext.setThreshold(sensD_ext.read());
   
   Serial.println("Calibracao concluida!");
 
-  EEPROM.write(0, sensorL.getThreshold());
-  EEPROM.write(1, sensorR.getThreshold());
+  eeprom.writeEEPROM(address1, sensE.getThreshold());
+  eeprom.writeEEPROM(address2, sensD.getThreshold());
+  eeprom.writeEEPROM(address3, sensE_ext.getThreshold());
+  eeprom.writeEEPROM(address4, sensD_ext.getThreshold());
   
-  Serial.print("Limiar esquerdo: "); Serial.println(sensorL.getThreshold());
-  Serial.print("Limiar direito: "); Serial.println(sensorR.getThreshold());
+  Serial.print("Limiar esquerdo: "); Serial.println(eeprom.readEEPROM(address1));
+  Serial.print("Limiar direito: "); Serial.println(eeprom.readEEPROM(address2));
+  Serial.print("Limiar esquerdo externo: "); Serial.println(eeprom.readEEPROM(address3));
+  Serial.print("Limiar direito externo: "); Serial.println(eeprom.readEEPROM(address4));
 }
 
 void loop() {
-  // Lê os sensores
-  bool leftBlack = sensorL.isBlack();
-  bool rightBlack = sensorR.isBlack();
+  bool leftBlack = sensE.isBlack();
+  bool rightBlack = sensD.isBlack();
+  bool leftBlack_ext = sensE_ext.isBlack();
+  bool rightBlack_ext = sensD_ext.isBlack();
   
-  // Exibe os valores no monitor serial
   Serial.print("Esquerdo: ");
   Serial.print(leftBlack ? "PRETO" : "BRANCO");
   Serial.print(" (");
-  Serial.print(sensorL.read());
+  Serial.print(sensE.read());
   Serial.print(") | Direito: ");
   Serial.print(rightBlack ? "PRETO" : "BRANCO");
   Serial.print(" (");
-  Serial.print(sensorR.read());
+  Serial.print(sensD.read());
+  Serial.println(")");
+  Serial.print("Esquerdo exterior: ");
+  Serial.print(leftBlack_ext ? "PRETO" : "BRANCO");
+  Serial.print(" (");
+  Serial.print(sensE_ext.read());
+  Serial.print(") | Direito exterior: ");
+  Serial.print(rightBlack_ext ? "PRETO" : "BRANCO");
+  Serial.print(" (");
+  Serial.print(sensD_ext.read());
   Serial.println(")");
   
-  delay(200); // Pequeno atraso para facilitar a leitura
+  delay(200); 
 }
